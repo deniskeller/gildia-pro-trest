@@ -1,4 +1,6 @@
 import "./styles/main.css";
+import './js/main';
+
 import image from "./assets/img/tovar.jpg";
 
 var products = [
