@@ -27,7 +27,7 @@ var products = [
   { productId: 23, productName: "Товар 23", categoryId: 3 },
   { productId: 24, productName: "Товар 24", categoryId: 4 },
   { productId: 25, productName: "Товар 25", categoryId: 5 },
-  // { productId: 26, productName: "Товар 27", categoryId: 6 },
+  { productId: 26, productName: "Товар 27", categoryId: 6 },
 ];
 
 var categories = [
@@ -36,68 +36,82 @@ var categories = [
   { categoryId: 3, categoryName: "Носки" },
   { categoryId: 4, categoryName: "Джинсы" },
   { categoryId: 5, categoryName: "Брюки" },
-  // { categoryId: 6, categoryName: "Брюки2" },
+  { categoryId: 6, categoryName: "Брюки2" },
 ];
 
 const navbar = document.querySelector(".navbar");
 const content = document.querySelector(".content");
-const containers = [];
 
-for (let i = 0; i < categories.length; i++) {
-  let navbar_item = document.createElement("span");
-  navbar_item.innerText = categories[i].categoryName;
-  navbar_item.classList.add("navbar__item");
-  navbar.appendChild(navbar_item);
 
-  navbar_item.addEventListener("click", () => {
-    activateTab(i);
-  });
-  let container = document.createElement("div");
-  container.classList.add("container");
+window.addEventListener("DOMContentLoaded", () => {   
 
-  for (let j = 0; j < products.length; j++) {
-    if (products[j].categoryId === categories[i].categoryId) {
-      let productsNode = document.createElement("div");
-      productsNode.classList.add("content__item");
-      productsNode.innerHTML = `          
+  function renderList(tabs, elems) {
+    Object.values(tabs).forEach(cat => {
+
+    const tab_item = document.createElement('div');
+    tab_item.classList.add("tab_item");
+    tab_item.innerHTML = `${cat.categoryName}`;
+    navbar.appendChild(tab_item);    
+
+    const section = document.createElement('section');
+    section.classList.add("section");
+    content.appendChild(section);
+
+    Object.values(elems).forEach((product) => {
+      if (cat.categoryId == product.categoryId) {        
+        const item = document.createElement('section');
+        item.classList.add("item");
+        item.innerHTML = 
+          `<div class="item">
             <div class="item-img">
               <a href="#image">
                 <img src="${image || "https://via.placeholder.com/100"}">
               </a>
               <a
-                id="${products[j].productId}" 
+                id="${product.productId}"
                 href="#"
-                class="full" 
+                class="full"
                 style="background-image:url(${
                   image || "https://via.placeholder.com/100"
                 })">
               </a>
-            </div>         
-            <div class="item-title">${products[j].productName}</div>
+            </div>
+            <div class="item-title">${product.productName}</div>
+          </div>  
         `;
-      container.appendChild(productsNode);
-    }
+        section.appendChild(item);
+        }    
+      })
+    })
   }
-  content.append(container);
-  containers.push(container);
-}
 
-function activateTab(index) {
-  const navbar_item = document.querySelectorAll(".navbar__item");
-  navbar_item[index].classList.add("active");
-  navbar.onclick = function (e) {
-    for (let i = 0; i < navbar_item.length; i++) {
-      navbar_item[i].classList.remove("active");
-    }
-    e.target.classList.add("active");
-  };
-  deactivateAllTabs();
-  containers[index].classList.remove("hide");
-}
-activateTab(1);
+  renderList(categories, products);
+  
+  const container = document.querySelectorAll('.section');
+  const tabs = document.querySelectorAll('.tab_item');
 
-function deactivateAllTabs() {
-  containers.forEach((container) => {
-    container.classList.add("hide");
+  function hideTabContent() {    
+    container.forEach((item) => {
+      item.style.display = "none";
+    });
+    tabs.forEach((item) => {
+      item.classList.remove('active');
+    });
+  }
+  function showTabContent(i = 1) {
+    container[i].style.display = 'flex';
+    tabs[i].classList.add('active');
+  }
+  hideTabContent();
+  showTabContent();
+
+  navbar.addEventListener("click", (e) => {
+    let target = e.target;    
+    tabs.forEach((item, index) => {
+      if (target == item || target.parentNode == item) {
+        hideTabContent();
+        showTabContent(index);
+      }    
+    });    
   });
-}
+})
